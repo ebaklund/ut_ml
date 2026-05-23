@@ -37,32 +37,31 @@ inline float tz_and(float t1, float t2)
     return (t1 - t11 + t1*t2 + t2 - t22 + t11*t22) * 0.5f; // Saves one substraction and one multiplication
 }
 
-inline float twandz(float w1, float w2, float t1, float t2)
+/*
+inline float tzw_and(float w1, float w2, float t1, float t2)
 {
-    // return tz_and(w1 * t1, w2 * t2);
-    // return tbumpz(w1 * t1, w2 * t2) + tand(w1 * t1, w2 * t2);
-    // return ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f);
-    // return (((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f));
-    // return (((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f)) - 1.0f;
-    // return (((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2)) + ((1.0f + w1 * t1) * (1.0f + w2 * t2))) * 0.5f - 1.0f;
-    float wt1 = w1 * t1;
-    float wt2 = w2 * t2;
-    return (((1.0f - wt1 * wt1) * (1.0f - wt2 * wt2)) + ((1.0f + wt1) * (1.0f + wt2))) * 0.5f - 1.0f;
+    return tz_and(w1 * t1, w2 * t2);
+}
+*/
+
+inline float tzw_and(float w1, float w2, float wr, float t1, float t2)
+{
+    return wr * tz_and(w1 * t1, w2 * t2);
 }
 
 inline float tz_nif1(float t1, float t2)
 {
-    return twandz(-1.0f, 1.0f, t1, t2);
+    return tzw_and(-1.f, 1.f, 1.f, t1, t2);
 }
 
 inline float tz_nif2(float t1, float t2)
 {
-    return twandz(1.0f, -1.0f, t1, t2);
+    return tzw_and(1.f, -1.f, 1.f, t1, t2);
 }
 
 inline float tz_nor(float t1, float t2)
 {
-    return twandz(-1.0f, -1.0f, t1, t2);
+    return tzw_and(-1.f, -1.f, 1.f, t1, t2);
 }
 
 inline float tmin3(float t1, float t2)
@@ -71,7 +70,7 @@ inline float tmin3(float t1, float t2)
     return mt * mt * mt;
 }
 
-inline void dtwandz_dw(float w1, float w2, float t1, float t2, float& dw1, float& dw2)
+inline void dtzw_and_dw(float w1, float w2, float wr, float t1, float t2, float& dw1, float& dw2, float& dwr)
 {
     // return tz_and(w1 * t1, w2 * t2);
     // return tbumpz(w1 * t1, w2 * t2) + tand(w1 * t1, w2 * t2);
@@ -91,8 +90,11 @@ inline void dtwandz_dw(float w1, float w2, float t1, float t2, float& dw1, float
 
     float wt1 = w1 * t1;
     float wt2 = w2 * t2;
-    dw1 = t1 * (- wt1 * (1.0f - wt2 * wt2) + (1.0f + wt2) * 0.5f);
-    dw2 = t2 * (- wt2 * (1.0f - wt1 * wt1) + (1.0f + wt1) * 0.5f);
+    float wt11 = wt1 * wt1;
+    float wt22 = wt2 * wt2;
+    dw1 = t1*wr * (- wt1 * (1.0f - wt22) + (1.0f + wt2) * 0.5f);
+    dw2 = t2*wr * (- wt2 * (1.0f - wt11) + (1.0f + wt1) * 0.5f);
+    dwr = (wt1 - wt11 + wt1*wt2 + wt2 - wt22 + wt11*wt22) * 0.5f;
 }
 
 inline float rnd_pert()
@@ -114,16 +116,18 @@ inline float w_updated(float dw, float diff, float w)
     return w_updated;
 }
 
-inline void twlearnz(float target, float t1, float t2, float& w1, float& w2)
+inline void tzw_learn(float target, float t1, float t2, float& w1, float& w2, float& wr)
 {
     float dw1;
     float dw2;
-    dtwandz_dw(w1, w2, t1, t2, dw1, dw2);
+    float dwr;
+    dtzw_and_dw(w1, w2, wr, t1, t2, dw1, dw2, dwr);
 
-    float diff = target - tz_and(w1 * t1, w2 * t2);
+    float diff = target - tzw_and(w1, w2, wr, t1, t2);
 
     w1 = w_updated(dw1, diff, w1);
     w2 = w_updated(dw2, diff, w2);
+    wr = w_updated(dwr, diff, wr);
 }
 
 inline bool teq(float a, float b, float e)
