@@ -1,2 +1,2 @@
 # ut_ml
-Universal  Ternary Machine Lerning
+Universal Ternary Machine Lerning

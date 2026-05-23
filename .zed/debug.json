@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Debug C++ Tests",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "./bin/tests",
+    "args": ["-s", "-r", "compact"],
+    "cwd": ".",
+    "build": {
+      "command": "just",
+      "args": ["build-tests"],
+    },
+  },
+]
