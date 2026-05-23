@@ -14,16 +14,16 @@ TEST_CASE( "t_to_b", "[t_to_b]" ) {
     REQUIRE( t_to_b( 1.0f) ==  1.0f );
 }
 
-TEST_CASE( "tbumpz", "[tbumpz]" ) {
-    REQUIRE( tbumpz(-1.0f, -1.0f) == 0.0f );
-    REQUIRE( tbumpz(-1.0f,  0.0f) == 0.0f );
-    REQUIRE( tbumpz(-1.0f,  1.0f) == 0.0f );
-    REQUIRE( tbumpz( 0.0f, -1.0f) == 0.0f );
-    REQUIRE( tbumpz( 0.0f,  0.0f) == 0.5f );
-    REQUIRE( tbumpz( 0.0f,  1.0f) == 0.0f );
-    REQUIRE( tbumpz( 1.0f, -1.0f) == 0.0f );
-    REQUIRE( tbumpz( 1.0f,  0.0f) == 0.0f );
-    REQUIRE( tbumpz( 1.0f,  1.0f) == 0.0f );
+TEST_CASE( "tz_bump", "[tz_bump]" ) {
+    REQUIRE( tz_bump(-1.0f, -1.0f) == 0.0f );
+    REQUIRE( tz_bump(-1.0f,  0.0f) == 0.0f );
+    REQUIRE( tz_bump(-1.0f,  1.0f) == 0.0f );
+    REQUIRE( tz_bump( 0.0f, -1.0f) == 0.0f );
+    REQUIRE( tz_bump( 0.0f,  0.0f) == 0.5f );
+    REQUIRE( tz_bump( 0.0f,  1.0f) == 0.0f );
+    REQUIRE( tz_bump( 1.0f, -1.0f) == 0.0f );
+    REQUIRE( tz_bump( 1.0f,  0.0f) == 0.0f );
+    REQUIRE( tz_bump( 1.0f,  1.0f) == 0.0f );
 }
 
 TEST_CASE( "tand", "[tand]" ) {
@@ -38,52 +38,52 @@ TEST_CASE( "tand", "[tand]" ) {
     REQUIRE( tand( 1.0f,  1.0f) ==  1.0f );
 }
 
-TEST_CASE( "tandz", "[tandz]" ) {
-    REQUIRE( tandz(-1.0f, -1.0f) == -1.0f );
-    REQUIRE( tandz(-1.0f,  0.0f) == -1.0f );
-    REQUIRE( tandz(-1.0f,  1.0f) == -1.0f );
-    REQUIRE( tandz( 0.0f, -1.0f) == -1.0f );
-    REQUIRE( tandz( 0.0f,  0.0f) ==  0.0f );
-    REQUIRE( tandz( 0.0f,  1.0f) ==  0.0f );
-    REQUIRE( tandz( 1.0f, -1.0f) == -1.0f );
-    REQUIRE( tandz( 1.0f,  0.0f) ==  0.0f );
-    REQUIRE( tandz( 1.0f,  1.0f) ==  1.0f );
+TEST_CASE( "tz_and", "[tz_and]" ) {
+    REQUIRE( tz_and(-1.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_and(-1.0f,  0.0f) == -1.0f );
+    REQUIRE( tz_and(-1.0f,  1.0f) == -1.0f );
+    REQUIRE( tz_and( 0.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_and( 0.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_and( 0.0f,  1.0f) ==  0.0f );
+    REQUIRE( tz_and( 1.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_and( 1.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_and( 1.0f,  1.0f) ==  1.0f );
 }
 
-TEST_CASE( "tnif1z", "[tnif1z]" ) {
-    REQUIRE( tnif1z(-1.0f, -1.0f) == -1.0f );
-    REQUIRE( tnif1z(-1.0f,  0.0f) ==  0.0f );
-    REQUIRE( tnif1z(-1.0f,  1.0f) ==  1.0f );
-    REQUIRE( tnif1z( 0.0f, -1.0f) == -1.0f );
-    REQUIRE( tnif1z( 0.0f,  0.0f) ==  0.0f );
-    REQUIRE( tnif1z( 0.0f,  1.0f) ==  0.0f );
-    REQUIRE( tnif1z( 1.0f, -1.0f) == -1.0f );
-    REQUIRE( tnif1z( 1.0f,  0.0f) == -1.0f );
-    REQUIRE( tnif1z( 1.0f,  1.0f) == -1.0f );
+TEST_CASE( "tz_nif1", "[tz_nif1]" ) {
+    REQUIRE( tz_nif1(-1.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_nif1(-1.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_nif1(-1.0f,  1.0f) ==  1.0f );
+    REQUIRE( tz_nif1( 0.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_nif1( 0.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_nif1( 0.0f,  1.0f) ==  0.0f );
+    REQUIRE( tz_nif1( 1.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_nif1( 1.0f,  0.0f) == -1.0f );
+    REQUIRE( tz_nif1( 1.0f,  1.0f) == -1.0f );
 }
 
-TEST_CASE( "tnif2z", "[tnif2z]" ) {
-    REQUIRE( tnif2z(-1.0f, -1.0f) == -1.0f );
-    REQUIRE( tnif2z(-1.0f,  0.0f) == -1.0f );
-    REQUIRE( tnif2z(-1.0f,  1.0f) == -1.0f );
-    REQUIRE( tnif2z( 0.0f, -1.0f) ==  0.0f );
-    REQUIRE( tnif2z( 0.0f,  0.0f) ==  0.0f );
-    REQUIRE( tnif2z( 0.0f,  1.0f) == -1.0f );
-    REQUIRE( tnif2z( 1.0f, -1.0f) ==  1.0f );
-    REQUIRE( tnif2z( 1.0f,  0.0f) ==  0.0f );
-    REQUIRE( tnif2z( 1.0f,  1.0f) == -1.0f );
+TEST_CASE( "tz_nif2", "[tz_nif2]" ) {
+    REQUIRE( tz_nif2(-1.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_nif2(-1.0f,  0.0f) == -1.0f );
+    REQUIRE( tz_nif2(-1.0f,  1.0f) == -1.0f );
+    REQUIRE( tz_nif2( 0.0f, -1.0f) ==  0.0f );
+    REQUIRE( tz_nif2( 0.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_nif2( 0.0f,  1.0f) == -1.0f );
+    REQUIRE( tz_nif2( 1.0f, -1.0f) ==  1.0f );
+    REQUIRE( tz_nif2( 1.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_nif2( 1.0f,  1.0f) == -1.0f );
 }
 
-TEST_CASE( "tnorz", "[tnorz]" ) {
-    REQUIRE( tnorz(-1.0f, -1.0f) ==  1.0f );
-    REQUIRE( tnorz(-1.0f,  0.0f) ==  0.0f );
-    REQUIRE( tnorz(-1.0f,  1.0f) == -1.0f );
-    REQUIRE( tnorz( 0.0f, -1.0f) ==  0.0f );
-    REQUIRE( tnorz( 0.0f,  0.0f) ==  0.0f );
-    REQUIRE( tnorz( 0.0f,  1.0f) == -1.0f );
-    REQUIRE( tnorz( 1.0f, -1.0f) == -1.0f );
-    REQUIRE( tnorz( 1.0f,  0.0f) == -1.0f );
-    REQUIRE( tnorz( 1.0f,  1.0f) == -1.0f );
+TEST_CASE( "tz_nor", "[tz_nor]" ) {
+    REQUIRE( tz_nor(-1.0f, -1.0f) ==  1.0f );
+    REQUIRE( tz_nor(-1.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_nor(-1.0f,  1.0f) == -1.0f );
+    REQUIRE( tz_nor( 0.0f, -1.0f) ==  0.0f );
+    REQUIRE( tz_nor( 0.0f,  0.0f) ==  0.0f );
+    REQUIRE( tz_nor( 0.0f,  1.0f) == -1.0f );
+    REQUIRE( tz_nor( 1.0f, -1.0f) == -1.0f );
+    REQUIRE( tz_nor( 1.0f,  0.0f) == -1.0f );
+    REQUIRE( tz_nor( 1.0f,  1.0f) == -1.0f );
 }
 
 TEST_CASE( "tmin3", "[tmin3]" ) {

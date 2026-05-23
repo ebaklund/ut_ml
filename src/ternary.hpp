@@ -4,11 +4,6 @@
 #include <algorithm>
 
 
-inline float band(float b1, float b2)
-{
-    return b1 * b2;
-}
-
 inline float b_to_t(float b)
 {
     return b * 2.f - 1.f;
@@ -19,7 +14,7 @@ inline float t_to_b(float t)
     return (t + 1.f) * 0.5f;
 }
 
-inline float tbumpz(float t1, float t2)
+inline float tz_bump(float t1, float t2)
 {
     return (1.0f - t1 * t1) * (1.0f - t2 * t2) * 0.5f;
 }
@@ -29,14 +24,22 @@ inline float tand(float t1, float t2)
     return (1.0f + t1) * (1.0f + t2) * 0.5f - 1.0f;
 }
 
-inline float tandz(float t1, float t2)
+inline float tz_and(float t1, float t2)
 {
-    return tbumpz(t1, t2) + tand(t1, t2);
+    //return tand(t1, t2) + tz_bump(t1, t2);
+    //return (1.0f + t1) * (1.0f + t2) * 0.5f - 1.0f + (1.0f - t1 * t1) * (1.0f - t2 * t2) * 0.5f;
+    //return ((1.0f + t1) * (1.0f + t2) + (1.0f - t1 * t1) * (1.0f - t2 * t2))  * 0.5f - 1.0f;
+    //return (1.0f + t1 + t2 + t1*t2 + (1.0f - t1 * t1) * (1.0f - t2 * t2))  * 0.5f - 1.0f;
+    //return (1.0f + t1 + t2 + t1*t2 + 1.0f - t1*t1 - t2*t2 + t1*t1*t2*t2)  * 0.5f - 1.0f;
+    //return (t1 - t1*t1 + t1*t2 + t2 - t2*t2 + t1*t1*t2*t2) * 0.5f;
+    float t11 = t1 * t1;
+    float t22 = t2 * t2;
+    return (t1 - t11 + t1*t2 + t2 - t22 + t11*t22) * 0.5f; // Saves one substraction and one multiplication
 }
 
 inline float twandz(float w1, float w2, float t1, float t2)
 {
-    // return tandz(w1 * t1, w2 * t2);
+    // return tz_and(w1 * t1, w2 * t2);
     // return tbumpz(w1 * t1, w2 * t2) + tand(w1 * t1, w2 * t2);
     // return ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f);
     // return (((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f));
@@ -47,17 +50,17 @@ inline float twandz(float w1, float w2, float t1, float t2)
     return (((1.0f - wt1 * wt1) * (1.0f - wt2 * wt2)) + ((1.0f + wt1) * (1.0f + wt2))) * 0.5f - 1.0f;
 }
 
-inline float tnif1z(float t1, float t2)
+inline float tz_nif1(float t1, float t2)
 {
     return twandz(-1.0f, 1.0f, t1, t2);
 }
 
-inline float tnif2z(float t1, float t2)
+inline float tz_nif2(float t1, float t2)
 {
     return twandz(1.0f, -1.0f, t1, t2);
 }
 
-inline float tnorz(float t1, float t2)
+inline float tz_nor(float t1, float t2)
 {
     return twandz(-1.0f, -1.0f, t1, t2);
 }
@@ -70,21 +73,21 @@ inline float tmin3(float t1, float t2)
 
 inline void dtwandz_dw(float w1, float w2, float t1, float t2, float& dw1, float& dw2)
 {
-    // return tandz(w1 * t1, w2 * t2);
+    // return tz_and(w1 * t1, w2 * t2);
     // return tbumpz(w1 * t1, w2 * t2) + tand(w1 * t1, w2 * t2);
     // return ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f);
-    // d_tandz/d_w1: (((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f))'
-    // d_tandz/d_w1: ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f)' + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f)' - 1.0f'
-    // d_tandz/d_w1: ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f)' + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f)'
-    // d_tandz/d_w1: [((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2))' + ((1.0f + w1 * t1) * (1.0f + w2 * t2))'] * 0.5f
-    // d_tandz/d_w1: [(1.0f - w1 * w1 * t1 * t1)' * (1.0f - w2 * w2 * t2 * t2) + (1.0f + w1 * t1)' * (1.0f + w2 * t2)] * 0.5f
-    // d_tandz/d_w1: [(1.0f' - (w1 * w1 * t1 * t1)') * (1.0f - w2 * w2 * t2 * t2) + (1.0f' + (w1 * t1)') * (1.0f + w2 * t2)] * 0.5f
-    // d_tandz/d_w1: [-(w1 * w1 * t1 * t1)' * (1.0f - w2 * w2 * t2 * t2) + (w1 * t1)' * (1.0f + w2 * t2)] * 0.5f
-    // d_tandz/d_w1: [-(2 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) + t1 * (1.0f + w2 * t2)] * 0.5f
-    // d_tandz/d_w1: -(w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) + t1 * (1.0f + w2 * t2) * 0.5f
-    // d_tandz/d_w1: t1 * (-(w1 * t1) * (1.0f - w2 * w2 * t2 * t2) + (1.0f + w2 * t2) * 0.5f)
-    // d_tandz/d_w1: t1 * (-w1 * t1 * (1.0f - w2 * w2 * t2 * t2) + (1.0f + w2 * t2) * 0.5f)
-    // d_tandz/d_w1: t1 * (-wt1 * (1.0f - wt2 * wt2) + (1.0f + wt2) * 0.5f)
+    // d_tz_and/d_w1: (((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f) + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f - 1.0f))'
+    // d_tz_and/d_w1: ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f)' + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f)' - 1.0f'
+    // d_tz_and/d_w1: ((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) * 0.5f)' + ((1.0f + w1 * t1) * (1.0f + w2 * t2) * 0.5f)'
+    // d_tz_and/d_w1: [((1.0f - w1 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2))' + ((1.0f + w1 * t1) * (1.0f + w2 * t2))'] * 0.5f
+    // d_tz_and/d_w1: [(1.0f - w1 * w1 * t1 * t1)' * (1.0f - w2 * w2 * t2 * t2) + (1.0f + w1 * t1)' * (1.0f + w2 * t2)] * 0.5f
+    // d_tz_and/d_w1: [(1.0f' - (w1 * w1 * t1 * t1)') * (1.0f - w2 * w2 * t2 * t2) + (1.0f' + (w1 * t1)') * (1.0f + w2 * t2)] * 0.5f
+    // d_tz_and/d_w1: [-(w1 * w1 * t1 * t1)' * (1.0f - w2 * w2 * t2 * t2) + (w1 * t1)' * (1.0f + w2 * t2)] * 0.5f
+    // d_tz_and/d_w1: [-(2 * w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) + t1 * (1.0f + w2 * t2)] * 0.5f
+    // d_tz_and/d_w1: -(w1 * t1 * t1) * (1.0f - w2 * w2 * t2 * t2) + t1 * (1.0f + w2 * t2) * 0.5f
+    // d_tz_and/d_w1: t1 * (-(w1 * t1) * (1.0f - w2 * w2 * t2 * t2) + (1.0f + w2 * t2) * 0.5f)
+    // d_tz_and/d_w1: t1 * (-w1 * t1 * (1.0f - w2 * w2 * t2 * t2) + (1.0f + w2 * t2) * 0.5f)
+    // d_tz_and/d_w1: t1 * (-wt1 * (1.0f - wt2 * wt2) + (1.0f + wt2) * 0.5f)
 
     float wt1 = w1 * t1;
     float wt2 = w2 * t2;
@@ -117,7 +120,7 @@ inline void twlearnz(float target, float t1, float t2, float& w1, float& w2)
     float dw2;
     dtwandz_dw(w1, w2, t1, t2, dw1, dw2);
 
-    float diff = target - tandz(w1 * t1, w2 * t2);
+    float diff = target - tz_and(w1 * t1, w2 * t2);
 
     w1 = w_updated(dw1, diff, w1);
     w2 = w_updated(dw2, diff, w2);
@@ -125,5 +128,5 @@ inline void twlearnz(float target, float t1, float t2, float& w1, float& w2)
 
 inline bool teq(float a, float b, float e)
 {
-    return std::abs(a - b) <= e; //
+    return std::abs(a - b) <= e;
 }
