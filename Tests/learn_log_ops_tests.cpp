@@ -5,6 +5,7 @@
 #include <iostream>
 #include <src/ternary.hpp>
 
+const float ERR = 0.0000001f;
 
 uint32_t test_learning(const float target_w1, const float target_w2, const float target_wr, float err, float& w1, float& w2, float& wr)
 {
@@ -32,7 +33,7 @@ uint32_t test_learning(const float target_w1, const float target_w2, const float
         std::cout << std::format("{}, ", tzw_and(w1, w2, -1.f,  1.f));
         std::cout << std::format("{}\n", tzw_and(w1, w2,  0.f,  0.f));
 */
-        if (teq(target_w1, w1, err) && teq(target_w2, w2, err))
+        if (teq(target_w1, w1, err) && teq(target_w2, w2, err) && teq(target_wr, wr, err))
             break;
     }
 
@@ -43,22 +44,80 @@ uint32_t test_learning(const float target_w1, const float target_w2, const float
 
 TEST_CASE( "learn_and", "[learn_and]" )
 {
-    const float err = 0.0000001f;
     float w1, w2, wr;
-    test_learning(1.f, 1.f, 1.f, err, w1, w2, wr);
+    test_learning(1.f, 1.f, 1.f, ERR, w1, w2, wr);
 
-    REQUIRE( true == teq(1.f, w1, err) );
-    REQUIRE( true == teq(1.f, w2, err) );
-    REQUIRE( true == teq(1.f, wr, err) );
+    REQUIRE( true == teq(1.f, w1, ERR) );
+    REQUIRE( true == teq(1.f, w2, ERR) );
+    REQUIRE( true == teq(1.f, wr, ERR) );
+}
+
+TEST_CASE( "learn_nand", "[learn_nand]" )
+{
+    float w1, w2, wr;
+    test_learning(1.f, 1.f, -1.f, ERR, w1, w2, wr);
+
+    REQUIRE( true == teq( 1.f, w1, ERR) );
+    REQUIRE( true == teq( 1.f, w2, ERR) );
+    REQUIRE( true == teq(-1.f, wr, ERR) );
+}
+
+TEST_CASE( "learn_or", "[learn_or]" )
+{
+    float w1, w2, wr;
+    test_learning(-1.f, -1.f, -1.f, ERR, w1, w2, wr);
+
+    REQUIRE( true == teq(-1.f, w1, ERR) );
+    REQUIRE( true == teq(-1.f, w2, ERR) );
+    REQUIRE( true == teq(-1.f, wr, ERR) );
 }
 
 TEST_CASE( "learn_nor", "[learn_nor]" )
 {
-    const float err = 0.0000001f;
     float w1, w2, wr;
-    test_learning(-1.f, -1.f, 1.f, err, w1, w2, wr);
+    test_learning(-1.f, -1.f, 1.f, ERR, w1, w2, wr);
 
-    REQUIRE( true == teq(-1.f, w1, err) );
-    REQUIRE( true == teq(-1.f, w2, err) );
-    REQUIRE( true == teq( 1.f, wr, err) );
+    REQUIRE( true == teq(-1.f, w1, ERR) );
+    REQUIRE( true == teq(-1.f, w2, ERR) );
+    REQUIRE( true == teq( 1.f, wr, ERR) );
+}
+
+TEST_CASE( "learn_if1", "[learn_if1]" )
+{
+    float w1, w2, wr;
+    test_learning(-1.f,  1.f, -1.f, ERR, w1, w2, wr);
+
+    REQUIRE( true == teq(-1.f, w1, ERR) );
+    REQUIRE( true == teq( 1.f, w2, ERR) );
+    REQUIRE( true == teq(-1.f, wr, ERR) );
+}
+
+TEST_CASE( "learn_nif1", "[learn_nif1]" )
+{
+    float w1, w2, wr;
+    test_learning(-1.f,  1.f, 1.f, ERR, w1, w2, wr);
+
+    REQUIRE( true == teq(-1.f, w1, ERR) );
+    REQUIRE( true == teq( 1.f, w2, ERR) );
+    REQUIRE( true == teq( 1.f, wr, ERR) );
+}
+
+TEST_CASE( "learn_if2", "[learn_if2]" )
+{
+    float w1, w2, wr;
+    test_learning( 1.f, -1.f, -1.f, ERR, w1, w2, wr);
+
+    REQUIRE( true == teq( 1.f, w1, ERR) );
+    REQUIRE( true == teq(-1.f, w2, ERR) );
+    REQUIRE( true == teq(-1.f, wr, ERR) );
+}
+
+TEST_CASE( "learn_nif2", "[learn_nif2]" )
+{
+    float w1, w2, wr;
+    test_learning( 1.f, -1.f, 1.f, ERR, w1, w2, wr);
+
+    REQUIRE( true == teq( 1.f, w1, ERR) );
+    REQUIRE( true == teq(-1.f, w2, ERR) );
+    REQUIRE( true == teq( 1.f, wr, ERR) );
 }

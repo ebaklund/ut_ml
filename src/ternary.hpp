@@ -108,12 +108,10 @@ inline float rnd_pert()
 
 inline float w_updated(float dw, float diff, float w)
 {
-    const float throttle = 0.99f;
-    const float heat = 0.001f;
+    const float throttle = 3.0f;//
+    const float heat = 0.001;
 
-    float correction = (rnd_pert() * heat + throttle * dw) * diff;
-    float w_updated = std::clamp(w + correction, -1.f, 1.f);
-    return w_updated;
+    return std::clamp(w + (rnd_pert() * heat + throttle) * diff / (std::copysign(1.f, dw) + dw), -1.f, 1.f);
 }
 
 inline void tzw_learn(float target, float t1, float t2, float& w1, float& w2, float& wr)
